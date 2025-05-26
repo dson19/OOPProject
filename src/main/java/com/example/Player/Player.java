@@ -34,4 +34,8 @@ public class Player {
     public void passTurn() {
         // Có thể cập nhật trạng thái gì đó nếu cần
     }
+
+    public void addCard(Card card) {
+        hand.add(card);
+    }
 }

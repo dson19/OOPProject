@@ -59,15 +59,10 @@ public class Card {
         return Integer.compare(c1.getRankValue(), c2.getRankValue());
     }
 
-    // ==================== So sánh theo cả Rank và Suit ====================
-    // Át bích > át rô > át chuồn > át cơ
-    public static int compareByRankAndSuit(Card c1, Card c2) {
-        int rankCompare = compareByRank(c1, c2);
-        if (rankCompare != 0) return rankCompare;
-        return compareSuit(c1.getSuit(), c2.getSuit());
-    }
 
-    private static int compareSuit(String suit1, String suit2) {
+
+
+    public static int compareSuit(String suit1, String suit2) {
     // Quy định thứ tự chất (H > D > C > S)
         int value1 = switch (suit1) {
             case "H" -> 4; // Hearts

@@ -71,10 +71,14 @@ public class BaCayGameScene {
 
         // Đặt vị trí các player
         switch (i) {
-            case 0 -> gameLayout.setBottom(playerBox);
+            case 0 -> {
+                gameLayout.setBottom(playerBox);
+                
+            }
             case 1 -> {
                 gameLayout.setRight(playerBox);
                 playerBox.setRotate(90); // Xoay 90 độ để hiển thị đúng hướng
+                
             }
             case 2 -> {
                 gameLayout.setTop(playerBox);

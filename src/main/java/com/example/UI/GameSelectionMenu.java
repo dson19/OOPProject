@@ -1,6 +1,5 @@
 package com.example.UI;
 
-import com.example.TLMN.GameLogic;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -89,10 +88,7 @@ public class GameSelectionMenu {
         tlmnButton.setOnAction(e -> {
             RadioButton selectedPlayer = (RadioButton) playerToggleGroup.getSelectedToggle();
             int selectedPlayers = Integer.parseInt(selectedPlayer.getText().substring(0, 1));
-            GameLogic gameLogic = new GameLogic(selectedPlayers);
-            gameLogic.startGame();
-            TLMNGameScene tlmnGameScene = new TLMNGameScene(gameLogic);
-            Scene tlmnScene = tlmnGameScene.createTLMNGameScene(primaryStage, selectedPlayers, MainApplication.displayMode);
+            Scene tlmnScene = new TLMNGameScene().createTLMNGameScene(primaryStage, selectedPlayers, MainApplication.displayMode);
             primaryStage.setScene(tlmnScene);
         });
         baCayButton.setOnAction(e -> {
