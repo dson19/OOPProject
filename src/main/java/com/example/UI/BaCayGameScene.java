@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.example.BaCay.BaCayGame;
 import com.example.Deck.Card;
+import com.example.Player.Player;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -26,8 +27,8 @@ public class BaCayGameScene {
     private List<HBox> playerCardBoxes = new ArrayList<>();
     private int numberOfPlayers;  // lưu số người chơi
 
-    public Scene createBaCayGameScene(Stage primaryStage, int numberOfPlayers, boolean displayMode) {
-        this.numberOfPlayers = numberOfPlayers; // gán cho biến thành viên
+    public Scene createBaCayGameScene(Stage primaryStage, List<Player> players, boolean displayMode) {
+        this.numberOfPlayers = players.size(); // gán cho biến thành viên
 
         StackPane root = new StackPane();
         root.setPrefSize(1920, 1080);
@@ -54,7 +55,7 @@ public class BaCayGameScene {
         // Avatar (logo hình tròn)
        Circle avatar = createAvatar(40);
         // Tên người chơi
-        Label playerName = new Label("Player " + (i + 1));
+        Label playerName = new Label(players.get(i).getName());
         playerName.setStyle("-fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 14px;");
 
         // VBox chứa avatar + tên
@@ -106,9 +107,9 @@ public class BaCayGameScene {
                     List<Card> playerCards = game.getPlayerCards(i);
                     updatePlayerCards(i, playerCards, displayMode);
                 }
-                int winner = findWinner(game)+1;
+                int winner = findWinner(game);
                 VBox winnerAvatar = createWinnerAvatar();
-                Label winnerLabel = new Label("Winner: Player " + winner);
+                Label winnerLabel = new Label("Winner:  " + players.get(winner).getName());
                 winnerLabel.setStyle(
                     "-fx-background-color: linear-gradient(to bottom,rgb(255, 0, 0),rgb(255, 0, 0),rgb(230, 0, 0));" +
                     " -fx-background-radius: 15;" +
