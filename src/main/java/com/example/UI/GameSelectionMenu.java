@@ -52,17 +52,17 @@ public class GameSelectionMenu {
         baCayButton.setGraphic(baCayImage);
 
         HBox gameButtons = new HBox(20, baCayButton, tlmnButton);
-        AnchorPane.setLeftAnchor(gameButtons, 250.0);
+        AnchorPane.setLeftAnchor(gameButtons, 265.0);
         AnchorPane.setTopAnchor(gameButtons, 150.0);
         Pane.getChildren().add(gameButtons);
         root.getChildren().add(Pane);
+
         // Game Button Action
-        /*tlmnButton.setOnAction(e -> {
-            RadioButton selectedPlayer = (RadioButton) playerToggleGroup.getSelectedToggle();
-            int selectedPlayers = Integer.parseInt(selectedPlayer.getText().substring(0, 1));
-            Scene tlmnScene = new TLMNGameScene().createTLMNGameScene(primaryStage, selectedPlayers, MainApplication.displayMode);
-            primaryStage.setScene(tlmnScene);
-        });*/
+
+        tlmnButton.setOnAction(e -> {
+            Scene addPlayerScene = new AddPlayer().createAddPlayerScene(primaryStage, "TLMN");
+            primaryStage.setScene(addPlayerScene);
+        });
         baCayButton.setOnAction(e -> { 
             Scene addPlayerScene = new AddPlayer().createAddPlayerScene(primaryStage, "Ba Cây");
             primaryStage.setScene(addPlayerScene);

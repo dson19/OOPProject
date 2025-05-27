@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.Player.Player;
+import com.example.gamescene.BaCayGameScene;
+import com.example.gamescene.TLMNGameScene;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -59,26 +61,39 @@ public class AddPlayer {
         //Start Game Button
         Button startGameButton = MainApplication.createButton("Start Game");
         startGameButton.setOnAction(e -> {
-            List<Player> players = new ArrayList<>();
-            if (playerInputBox != null) {
-                for (int i = 0; i < playerInputBox.getChildren().size(); i++) {
-                    HBox row = (HBox) playerInputBox.getChildren().get(i);
-                    TextField nameField = (TextField) row.getChildren().get(0);
-                    String playerName = nameField.getText();
-                    players.add(new Player(i + 1, playerName)); // Assuming Player constructor takes id and name
-                }
+        List<Player> players = new ArrayList<>();
+        int playerID = 0;
+
+        int humanCount = 0;
+        if (playerInputBox != null) {
+            humanCount = playerInputBox.getChildren().size();
+            for (int i = 0; i < humanCount; i++) {
+                HBox row = (HBox) playerInputBox.getChildren().get(i);
+                TextField nameField = (TextField) row.getChildren().get(0);
+                String playerName = nameField.getText();
+                players.add(new Player(playerID++, playerName));
             }
-            else {
-                // Nếu không có playerInputBox, tạo người chơi mặc định
-                for (int i = 0; i < 2; i++) {
-                    players.add(new Player(i + 1)); // Tạo người chơi với tên mặc định
-                }
+        } else {
+            // Không có input box (mặc định 2 người)
+            humanCount = 2;
+            for (int i = 0; i < humanCount; i++) {
+                players.add(new Player(playerID++));
             }
-            Scene gameScene;
-            if (gameName.equals("Ba Cây")) {
-                gameScene = new BaCayGameScene().createBaCayGameScene(primaryStage, players, MainApplication.displayMode);
-                primaryStage.setScene(gameScene);
+        }
+
+        if (gameName.equals("Ba Cây")) {
+            // Không thêm bot
+            Scene gameScene = new BaCayGameScene().createBaCayGameScene(primaryStage, players, MainApplication.displayMode);
+            primaryStage.setScene(gameScene);
+        } else if (gameName.equals("TLMN")) {
+            // Thêm bot nếu chưa đủ 4 người
+            int botCount = 4 - humanCount;
+            for (int i = 0; i < botCount; i++) {
+                players.add(new Player(playerID++, "Bot " + (i), true));
             }
+            Scene gameScene = new TLMNGameScene().createTLMNGameScene(primaryStage, players, MainApplication.displayMode);
+            primaryStage.setScene(gameScene);
+        }
         });
         AnchorPane.setBottomAnchor(startGameButton, 20.0);
         AnchorPane.setRightAnchor(startGameButton, 50.0);

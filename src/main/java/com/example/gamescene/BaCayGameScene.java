@@ -1,11 +1,16 @@
-package com.example.UI;
+package com.example.gamescene;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.BaCay.BaCayGame;
 import com.example.Deck.Card;
 import com.example.Player.Player;
+import com.example.UI.CardView;
+import com.example.UI.DealCardAnimation;
+import com.example.UI.MainApplication;
+import com.example.UI.MainMenu;
+import com.example.UI.ShuffleEffect;
+import com.example.logic.BaCayGame;
 
 import javafx.animation.PauseTransition;
 import javafx.geometry.Pos;
@@ -65,7 +70,7 @@ public class BaCayGameScene {
         leftBox.setAlignment(Pos.CENTER);
 
         // HBox chứa các lá bài
-        HBox cardBox = new HBox(5);
+        HBox cardBox = new HBox( -40);
         cardBox.setAlignment(Pos.CENTER);
         playerCardBoxes.add(cardBox);
 
@@ -82,7 +87,7 @@ public class BaCayGameScene {
             case 1 -> {
                 AnchorPane.setRightAnchor(playerBox,20.0);
                 AnchorPane.setBottomAnchor(playerBox, 250.0);
-                playerBox.setRotate(90); // Xoay 90 độ để hiển thị đúng hướng
+                playerBox.setRotate(-90); // Xoay 90 độ để hiển thị đúng hướng
                 
             }
             case 2 -> {
@@ -93,7 +98,7 @@ public class BaCayGameScene {
             case 3 -> {
                 AnchorPane.setLeftAnchor(playerBox,20.0);
                 AnchorPane.setTopAnchor(playerBox, 400.0);
-                playerBox.setRotate(-90); // Xoay -90 độ để hiển thị đúng hướng
+                playerBox.setRotate(90); // Xoay -90 độ để hiển thị đúng hướng
             }
         }
         gameLayout.getChildren().add(playerBox);
@@ -149,7 +154,7 @@ public class BaCayGameScene {
         root.getChildren().addAll(tableBackground, gameLayout, startButton, backButton);
         StackPane.setAlignment(backButton, Pos.TOP_RIGHT);
 
-        return new Scene(root, 1200, 800);
+        return new Scene(root, 1920, 1080);
     }
 
     private int findWinner(BaCayGame game) {
@@ -164,7 +169,7 @@ public class BaCayGameScene {
         HBox cardBox = playerCardBoxes.get(playerIndex);
         cardBox.getChildren().clear();
         for (Card card : cards) {
-            CardView cardView = new CardView(card, 60, 90, displayMode);
+            CardView cardView = new CardView(card, 90, 120, displayMode);
             cardBox.getChildren().add(cardView);
         }
     }
