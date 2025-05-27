@@ -1,55 +1,113 @@
 package com.example.UI;
 
-import java.util.List;
-
-import com.example.Deck.Card;
-
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.scene.layout.HBox;
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.SequentialTransition;
+import javafx.animation.TranslateTransition;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 
 public class DealCardAnimation {
+    private final int sceneWidth = 1200; // Chiều rộng Scene
+    private final int sceneHeight = 675; // Chiều cao Scene
+    private final int cardWidth = 84; // Kích thước bài ngang (7% Scene width)
+    private final int cardHeight = 120; // Tỷ lệ bài là 1.4
+    private final int gap = 30; // Khoảng cách giữa các lá bài
 
-    public static void play(HBox cardBox, List<Card> cards, boolean displayMode, Runnable onFinished) {
-        cardBox.getChildren().clear(); // Xóa các lá cũ
+    public DealCardAnimation(AnchorPane gameRoot, int playerCount, int numberCards, Runnable onFinished) {
+        dealCards(gameRoot, playerCount, numberCards, onFinished);
+    }
 
-        Timeline timeline = new Timeline();
-        double delayBetweenCards = 0.2; // Giãn cách thời gian giữa các lá bài
+    public void dealCards(AnchorPane gameRoot, int playerCount, int numberCards, Runnable onFinished) {
+        SequentialTransition sequentialTransition = new SequentialTransition();
 
-        for (int i = 0; i < cards.size(); i++) {
-            Card card = cards.get(i);
-            CardView cardView = new CardView(card, 60, 90, displayMode);
+        for (int j = 0; j < numberCards; j++) {
+            for (int i = 0; i < playerCount; i++) {
+                double offsetX, offsetY;
 
-            // Khởi tạo hiệu ứng ban đầu: mờ và nhỏ
-            cardView.setOpacity(0);
-            cardView.setScaleX(0.5);
-            cardView.setScaleY(0.5);
+                offsetY = switch (i) {
+                    case 0 -> {
+                        offsetX = (sceneWidth - (numberCards - 1) * gap - cardWidth) / 2.0;
+                        yield sceneHeight - cardHeight - 20;
+                    }
+                    case 1 -> {
+                        offsetX = sceneWidth - cardHeight - 20;
+                        yield (sceneHeight - (numberCards - 1) * gap - cardWidth) / 2.0;
+                    }
+                    case 2 -> {
+                        offsetX = (sceneWidth - (numberCards - 1) * gap - cardWidth) / 2.0;
+                        yield 20;
+                    }
+                    case 3 -> {
+                        offsetX = 20;
+                        yield (sceneHeight - (numberCards - 1) * gap - cardWidth) / 2.0;
+                    }
+                    default -> throw new IllegalStateException("Unexpected player index: " + i);
+                };
+                ImageView cardBackView = new ImageView(new Image(getClass().getResourceAsStream("/com/example/CardImages/BACK.png")));
+                cardBackView.setFitWidth(cardWidth);
+                cardBackView.setFitHeight(cardHeight);
+                cardBackView.setId("CardImage");
 
-            cardBox.getChildren().add(cardView);
+                // Bắt đầu từ trung tâm bàn
+                cardBackView.setLayoutX(sceneWidth / 2.0 - cardWidth / 2.0);
+                cardBackView.setLayoutY(sceneHeight / 2.0 - cardHeight / 2.0);
 
-            // Tạo frame bắt đầu
-            KeyFrame startFrame = new KeyFrame(Duration.seconds(i * delayBetweenCards),
-                    new KeyValue(cardView.opacityProperty(), 0),
-                    new KeyValue(cardView.scaleXProperty(), 0.5),
-                    new KeyValue(cardView.scaleYProperty(), 0.5)
-            );
+                gameRoot.getChildren().add(cardBackView);
 
-            // Tạo frame kết thúc
-            KeyFrame endFrame = new KeyFrame(Duration.seconds(i * delayBetweenCards + 0.5),
-                    new KeyValue(cardView.opacityProperty(), 1),
-                    new KeyValue(cardView.scaleXProperty(), 1),
-                    new KeyValue(cardView.scaleYProperty(), 1)
-            );
+                // Hiệu ứng mờ dần (Fade In)
+                FadeTransition fadeTransition = new FadeTransition(Duration.millis(30), cardBackView); // Nhanh hơn
+                fadeTransition.setFromValue(0);
+                fadeTransition.setToValue(1);
 
-            timeline.getKeyFrames().addAll(startFrame, endFrame);
+                // Hiệu ứng di chuyển (Translate)
+                TranslateTransition translateTransition = new TranslateTransition(Duration.millis(50), cardBackView); // Nhanh hơn
+                if (i == 1 || i == 3) { // Người chơi 2 và 4
+                    translateTransition.setToX(offsetX + cardHeight / 2.0 - cardWidth / 2.0 - cardBackView.getLayoutX());
+                    translateTransition.setToY(offsetY + j * gap - cardBackView.getLayoutY());
+                    translateTransition.setOnFinished(event -> cardBackView.setRotate(90));
+                } else { // Người chơi 1 và 3
+                    translateTransition.setToX(offsetX + j * gap - cardBackView.getLayoutX());
+                    translateTransition.setToY(offsetY - cardBackView.getLayoutY());
+                }
+
+                // Hiệu ứng phóng to
+                ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(150), cardBackView); // Nhanh hơn
+                scaleTransition.setFromX(0.7);
+                scaleTransition.setFromY(0.7);
+                scaleTransition.setToX(1);
+                scaleTransition.setToY(1);
+
+                // Hiệu ứng nảy (Bounce)
+                TranslateTransition bounceTransition = new TranslateTransition(Duration.millis(1), cardBackView); // Nhanh hơn
+                bounceTransition.setByY(-5); // Nảy nhỏ hơn
+                bounceTransition.setAutoReverse(true);
+                bounceTransition.setCycleCount(2);
+
+                // Gộp tất cả hiệu ứng
+                ParallelTransition parallelTransition = new ParallelTransition(
+                        fadeTransition,
+                        translateTransition,
+                        scaleTransition
+                );
+
+                SequentialTransition cardSequence = new SequentialTransition(parallelTransition, bounceTransition);
+                sequentialTransition.getChildren().add(cardSequence);
+            }
+            
         }
 
-        timeline.setOnFinished(e -> {
-            if (onFinished != null) onFinished.run();
+        // Gọi callback khi animation hoàn thành
+        sequentialTransition.setOnFinished(event -> {
+            gameRoot.getChildren().removeIf(node -> node.getId() != null && node.getId().equals("CardImage"));
+            if (onFinished != null) {
+                onFinished.run();
+            }
         });
 
-        timeline.play();
+        sequentialTransition.play();
     }
 }

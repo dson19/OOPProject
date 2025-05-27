@@ -75,7 +75,7 @@ public class CardView extends StackPane {
     public Card getCard() {
         return card;
     }
-    public boolean isSelected() {
+    public Boolean isSelected() {
         return selected;
     }
 }

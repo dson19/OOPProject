@@ -52,7 +52,7 @@ public class CardGroupChecker {
             if (i >= 2) {
                 int prevRank = cards.get(i - 2).getRankValue();
                 int currRank = cards.get(i).getRankValue();
-                if (currRank != prevRank + 1 || currRank >= 15 || currRank <= 2) { // Không cho 2, Joker vào
+                if (currRank != prevRank + 1 || currRank >= 15 || currRank <= 2) { 
                     return false;
                 }
             }

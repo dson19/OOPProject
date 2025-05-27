@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 public class MainApplication extends javafx.application.Application {
     public static MediaPlayer mediaPlayer;
     public static Boolean displayMode = true;
-    
+    public static int volume = 50;
     public static Button createButton(String text) {
         Button button = new Button(text);
         // Gradient nền đỏ
@@ -56,7 +56,7 @@ public class MainApplication extends javafx.application.Application {
         primaryStage.show();
         playMusic();
     }
-  
+    
     public static void main(String[] args) {
         launch(args);
     }

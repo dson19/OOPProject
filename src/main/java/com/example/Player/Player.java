@@ -9,16 +9,25 @@ public class Player {
     private int id;
     private List<Card> hand = new ArrayList<>();
     private String name;
+    private boolean skipped = false;
+    private boolean isBot = false; // Biến để xác định người chơi có phải là bot hay không
 
     public Player(int id) {
         this.id = id;
+        this.isBot = false;
         this.name = "Player " + id; // Tên mặc định nếu không có tên cụ thể
     }
     public Player(int id,String name){
         this.id = id;
         this.name = name;
-        // Có thể lưu tên người chơi nếu cần
+        this.isBot = false;
     }
+    public Player(int id, String name, boolean isBot) {
+        this.id = id;
+        this.name = name;
+        this.isBot = isBot; // Xác định người chơi có phải là bot hay không
+    }
+    
     public int getId() {
         return id;
     }
@@ -28,7 +37,7 @@ public class Player {
     }
 
     public void sortHand() {
-        // Sắp xếp bài tùy bạn triển khai
+        hand.sort(Card::compareByRank); // Sắp xếp bài theo giá trị
     }
 
     // Loại bỏ bài đã đánh khỏi tay
@@ -38,7 +47,7 @@ public class Player {
 
     // Người chơi pass lượt
     public void passTurn() {
-        // Có thể cập nhật trạng thái gì đó nếu cần
+        skipped = true;
     }
 
     public void addCard(Card card) {

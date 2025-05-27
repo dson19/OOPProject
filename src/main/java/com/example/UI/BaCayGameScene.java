@@ -7,13 +7,14 @@ import com.example.BaCay.BaCayGame;
 import com.example.Deck.Card;
 import com.example.Player.Player;
 
+import javafx.animation.PauseTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -21,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class BaCayGameScene {
 
@@ -33,7 +35,7 @@ public class BaCayGameScene {
         StackPane root = new StackPane();
         root.setPrefSize(1920, 1080);
 
-        BorderPane gameLayout = new BorderPane();
+        AnchorPane gameLayout = new AnchorPane();
 
         // Background bàn chơi
         ImageView tableBackground = new ImageView(getClass().getResource("/com/example/Application/TableInGame.png").toExternalForm());
@@ -69,63 +71,77 @@ public class BaCayGameScene {
 
         // Thêm vào playerBox (bên trái là avatar, bên phải là bài)
         playerBox.getChildren().addAll(leftBox, cardBox);
-
+        playerBox.setId("PlayerBox"); // Đặt ID cho playerBox để dễ dàng định dạng CSS
         // Đặt vị trí các player
         switch (i) {
             case 0 -> {
-                gameLayout.setBottom(playerBox);
+                AnchorPane.setBottomAnchor(playerBox, 20.0);
+                AnchorPane.setLeftAnchor(playerBox,500.0);
                 
             }
             case 1 -> {
-                gameLayout.setRight(playerBox);
+                AnchorPane.setRightAnchor(playerBox,20.0);
+                AnchorPane.setBottomAnchor(playerBox, 250.0);
                 playerBox.setRotate(90); // Xoay 90 độ để hiển thị đúng hướng
                 
             }
             case 2 -> {
-                gameLayout.setTop(playerBox);
+                AnchorPane.setTopAnchor(playerBox,20.0);
+                AnchorPane.setRightAnchor(playerBox, 500.0);
                 playerBox.setRotate(180); // Xoay 180 độ để hiển thị đúng hướng
             }
             case 3 -> {
-                gameLayout.setLeft(playerBox);
+                AnchorPane.setLeftAnchor(playerBox,20.0);
+                AnchorPane.setTopAnchor(playerBox, 400.0);
                 playerBox.setRotate(-90); // Xoay -90 độ để hiển thị đúng hướng
             }
         }
+        gameLayout.getChildren().add(playerBox);
     }
 
         // Start Game
         startButton.setOnAction(e -> {
+            
             startButton.setVisible(false);
-            // Tạo hiệu ứng shuffle với số lá bài là tổng số bài (ví dụ 21 lá)
-            ShuffleEffect shuffleEffect = new ShuffleEffect(root, 21); 
+            // Tạo hiệu ứng shuffle với số lá bài là tổng số bài 
+            ShuffleEffect shuffleEffect = new ShuffleEffect(root, 54); 
 
             shuffleEffect.startShuffle(() -> {
                 // Sau khi hiệu ứng shuffle kết thúc mới chạy game
                 BaCayGame game = new BaCayGame(this.numberOfPlayers);
                 game.dealCards();
                 
-                for (int i = 0; i < this.numberOfPlayers; i++) {
-                    List<Card> playerCards = game.getPlayerCards(i);
-                    updatePlayerCards(i, playerCards, displayMode);
-                }
-                int winner = findWinner(game);
-                VBox winnerAvatar = createWinnerAvatar();
-                Label winnerLabel = new Label("Winner:  " + players.get(winner).getName());
-                winnerLabel.setStyle(
-                    "-fx-background-color: linear-gradient(to bottom,rgb(255, 0, 0),rgb(255, 0, 0),rgb(230, 0, 0));" +
-                    " -fx-background-radius: 15;" +
-                    " -fx-border-color: white;" +
-                    " -fx-border-width: 2;" +
-                    " -fx-border-radius: 15;" +
-                    " -fx-text-fill: white;" +
-                    " -fx-font-weight: bold;" +
-                    " -fx-font-size: 16;"
-                );
-                VBox winnerBox = new VBox(5, winnerAvatar, winnerLabel);
-                winnerBox.setAlignment(Pos.CENTER);
-                startButton.setText("Play Again");
-                startButton.setVisible(true);
-                gameLayout.setCenter(winnerBox);
-                StackPane.setAlignment(startButton, Pos.BOTTOM_RIGHT);
+                
+                DealCardAnimation dealCardAnimation = new DealCardAnimation(gameLayout,this.numberOfPlayers,3,null);
+                PauseTransition pause = new PauseTransition(Duration.seconds(numberOfPlayers * 0.5));
+                pause.play();
+                pause.setOnFinished(eh-> {
+                    for (int i = 0; i < this.numberOfPlayers; i++) {
+                        List<Card> playerCards = game.getPlayerCards(i);
+                        updatePlayerCards(i, playerCards, displayMode);
+                    }
+                    int winner = findWinner(game);
+                    VBox winnerAvatar = createWinnerAvatar();
+                    Label winnerLabel = new Label("Winner:  " + players.get(winner).getName());
+                    winnerLabel.setStyle(
+                        "-fx-background-color: linear-gradient(to bottom,rgb(255, 0, 0),rgb(255, 0, 0),rgb(230, 0, 0));" +
+                        " -fx-background-radius: 15;" +
+                        " -fx-border-color: white;" +
+                        " -fx-border-width: 2;" +
+                        " -fx-border-radius: 15;" +
+                        " -fx-text-fill: white;" +
+                        " -fx-font-weight: bold;" +
+                        " -fx-font-size: 16;"
+                    );
+                    VBox winnerBox = new VBox(5, winnerAvatar, winnerLabel);
+                    winnerBox.setAlignment(Pos.CENTER);
+                    startButton.setText("Play Again");
+                    startButton.setVisible(true);
+                    AnchorPane.setBottomAnchor(winnerBox,400.0);
+                    AnchorPane.setLeftAnchor(winnerBox, 500.0);
+                    gameLayout.getChildren().add(winnerBox);
+                    StackPane.setAlignment(startButton, Pos.BOTTOM_RIGHT);
+                });
             });
         });
 
@@ -151,7 +167,6 @@ public class BaCayGameScene {
             CardView cardView = new CardView(card, 60, 90, displayMode);
             cardBox.getChildren().add(cardView);
         }
-        DealCardAnimation.play(cardBox, cards, displayMode, null);
     }
     public Circle createAvatar(float radius) {
         Image avatarImage = new Image(getClass().getResource("/com/example/Application/avatar.jpg").toExternalForm());

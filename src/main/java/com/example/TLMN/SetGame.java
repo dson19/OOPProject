@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.example.Deck.Card;
 import com.example.Deck.Deck;
-import com.example.Player.Bot;
+import com.example.Player.BotTLMN;
 import com.example.Player.Player;
 
 public class SetGame {
@@ -25,7 +25,7 @@ public class SetGame {
         }
         else{
 
-            players.add(new Bot(player.getId()));
+            players.add(new BotTLMN(player.getId()));
         }
     }
     public void dealCards() {
@@ -35,7 +35,6 @@ public class SetGame {
                 if (card != null) {
                     player.addCard(card);
                 } else {
-                    System.out.println("Không còn lá bài nào để rút.");
                     break;
                 }
             }

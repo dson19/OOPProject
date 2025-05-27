@@ -33,7 +33,6 @@ public class Card {
         return rank + "-" + suit;
     }
 
-    // ==================== Setters ====================
     public void flip() {
         faceUp = !faceUp;
     }
@@ -42,7 +41,6 @@ public class Card {
         this.selected = selected;
     }
 
-    // ==================== Rank Value (Theo TLMN) ====================
     public int getRankValue() {
         return switch (rank) {
             case "2" -> 15;
@@ -54,14 +52,9 @@ public class Card {
         };
     }
 
-    // ==================== So sánh theo Rank ====================
     public static int compareByRank(Card c1, Card c2) {
         return Integer.compare(c1.getRankValue(), c2.getRankValue());
     }
-
-
-
-
     public static int compareSuit(String suit1, String suit2) {
     // Quy định thứ tự chất (H > D > C > S)
         int value1 = switch (suit1) {
@@ -79,6 +72,13 @@ public class Card {
             default -> 0;
         };
         return Integer.compare(value1, value2);
+    
     }
-
+    public int compareCard(Card other) {
+        int rankComparison = compareByRank(this, other);
+        if (rankComparison != 0) {
+            return rankComparison; // So sánh theo giá trị trước
+        }
+        return compareSuit(this.getSuit(), other.getSuit()); // Nếu giá trị bằng nhau, so sánh theo chất
+    }
 }

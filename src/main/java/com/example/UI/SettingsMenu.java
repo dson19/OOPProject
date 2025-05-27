@@ -47,7 +47,7 @@ public class SettingsMenu {
         volumeText.setPrefWidth(70);
         volumeText.setFont(javafx.scene.text.Font.font("System", javafx.scene.text.FontWeight.BOLD, 14));
 
-        Slider soundSlider = new Slider(0, 100, 50);
+        Slider soundSlider = new Slider(0, 100, MainApplication.volume);
         soundSlider.setShowTickLabels(false);
         soundSlider.setShowTickMarks(false);
         soundSlider.setBlockIncrement(10);
@@ -69,10 +69,13 @@ public class SettingsMenu {
         soundSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             volumeValue.setText(String.valueOf(newValue.intValue()));
         });
-        soundSlider.setOnMouseDragged(e -> MainApplication.mediaPlayer.setVolume(soundSlider.getValue() / 100.0));
+        soundSlider.setOnMouseDragged(e -> {
+            MainApplication.mediaPlayer.setVolume(soundSlider.getValue() / 100.0);
+            MainApplication.volume = (int) soundSlider.getValue();
+        });
         volumeBox.getChildren().addAll(volumeText, soundSlider, volumeValue);
         settingsMenu.getChildren().add(volumeBox);
-        Button DisplayMode = MainApplication.createButton("Image Mode");
+        Button DisplayMode = MainApplication.createButton(MainApplication.displayMode ? "Image Mode" : "Text Mode");
         DisplayMode.setOnAction(e -> {
             MainApplication.displayMode = !MainApplication.displayMode;
             DisplayMode.setText(MainApplication.displayMode ? "Image Mode" : "Text Mode");

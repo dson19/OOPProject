@@ -3,7 +3,7 @@ package com.example.TLMN;
 import java.util.List;
 
 import com.example.Deck.Card;
-import com.example.Player.*;
+import com.example.Player.Player;
 
 public class Rules {
     protected int numOfPlayers;
@@ -19,34 +19,77 @@ public class Rules {
         group1 = cardGroupChecker.sortCards(group1);
         group2 = cardGroupChecker.sortCards(group2);
         if (group1.isEmpty()){
-            return true; // lượt đầu tiên của vòng chơi
+            return true;
         }
         if (group2.isEmpty()) {
-            return false; // không được đánh bài trống?
+            return false; 
         }
-        if ( group1.get(0).getRankValue() != 15 &&  group1.size() != group2.size() && !cardGroupChecker.isConsecutivePairs(group1)) {
-            return false; // loại trừ các trường hợp không cùng loại bài vẫn hợp lệ -> chặt 2, và đôi thông
+        if (group1.size() != group2.size()) {
+            return false; // Không cùng số lượng bài
         }
-        if (group1.size() == group2.size()) {
-            String type1 = cardGroupChecker.getCardType(group1);
-            String type2 = cardGroupChecker.getCardType(group2);
-            if (type1.equals(type2)) {
-                Card highestCard1 = group1.get(group1.size()-1);
-                Card highestCard2 = group2.get(group2.size() -1);
-                if (highestCard2.getRankValue() > highestCard1.getRankValue()) {
-                    return true; // group2 thắng
-                } else if (highestCard1.getRankValue() > highestCard2.getRankValue()) {
-                    return false; // group1 thắng
-                } else {
-                    String suit1 = highestCard1.getSuit();
-                    String suit2 = highestCard2.getSuit();
-                    return Card.compareSuit(suit1,suit2)>0; 
-                }
-            } 
-        }
-        return false; // không cùng loại bài
+        return group1.getLast().compareCard(group2.getLast()) > 0; // So sánh lá bài cuối cùng
     }
-    protected Player Winner(){
+
+    public Boolean checkCardPlayed(List<Card> cardsInTable,List<Card> cardsInHand) {
+        if (cardsInHand.isEmpty()) return false;
+        String typePreTurn = cardGroupChecker.getCardType(cardsInTable);
+        String typeInHand = cardGroupChecker.getCardType(cardsInHand);
+        if (typeInHand.equals("Invalid")) return false;
+        if (cardsInTable.isEmpty())  return true;
+        if (!typePreTurn.equals(typeInHand)) {
+            if (typePreTurn.equals("Single"))
+            {
+                if (cardsInTable.getFirst().getRankValue() != 15)
+                {
+                    return false; 
+                }
+                else
+                {
+                    return (typeInHand.equals("ConsecutivePairs")  || typeInHand.equals("FourOfAKind"));
+                }
+            }
+            if (typePreTurn.equals("Pair")|| typePreTurn.equals("Triple")) //chặt đôi 2  hoặc tam 2 cần 4 đôi thông hoặc tứ quý
+            {
+                if (cardsInTable.getFirst().getRankValue() != 15)
+                {
+                    return false; 
+                }
+                else
+                {
+                    return ( (typeInHand.equals("ConsecutivePairs") && cardsInHand.size()>=8) || typeInHand.equals("FourOfAKind"));
+                }
+            }
+            if (typePreTurn.equals("ConsecutivePairs") && cardsInTable.size() == 6)
+            {
+                return (typeInHand.equals("FourOfAKind"));
+            }
+            if (typePreTurn.equals("FourOfAKind")) //chặt tứ quý cần 4 đôi thông
+            {
+                return (typeInHand.equals("ConsecutivePairs") && cardsInHand.size() >= 8);
+            }
+            return false;
+        }
+        return compareCards(cardsInTable, cardsInHand);
+    }
+
+    protected int checkWinnerBeforePlayed(){
+        for (int i=0;i< numOfPlayers;i++)
+        {
+            players.get(i).sortHand();
+            List<Card> hand = players.get(i).getHand();
+            int numberOfTwos =0;
+            for (Card card : hand){
+                if (card.getRankValue() == 15) {
+                    numberOfTwos++; 
+                }
+            }
+            if (numberOfTwos >= 4) {
+                return i; 
+            }
+        }
+        return -1;
+    }
+    protected Player winner(){
         for (Player player : players){
             if (player.getHand().isEmpty()) {
                 return player; 
